@@ -15,36 +15,43 @@ void initList(ListNode **head);
 int insertList(ListNode *head, int index, int data);
 void reverseList(ListNode *head, ListNode **outputHead);
 int ListGet(ListNode *head, int index, int *data);
+void printList(ListNode *l);
+
+ListNode *addTwoNumbers(ListNode *l1, ListNode *l2);
 
 int main()
 {
     ListNode *l1, *l2;
     int data, size;
     initList(&l1);
-    l1->val = 7;
-    insertList(l1, 0, 2);
-    insertList(l1, 1, 4);
-    insertList(l1, 2, 3);
+    insertList(l1, 0, 7);
+    insertList(l1, 1, 2);
+    insertList(l1, 2, 4);
+    insertList(l1, 3, 3);
     printf("list 1:");
     size = ListLength(l1);
-    for (int i = 0; i < size; i++)
+    printList(l1);
+
+    printf("list 2:");
+    initList(&l2);
+    insertList(l2, 0, 5);
+    insertList(l2, 1, 6);
+    insertList(l2, 2, 4);
+    printList(l2);
+
+    ListNode *result = addTwoNumbers(l1, l2);
+    return 1;
+}
+
+void printList(ListNode *l)
+{
+    int data;
+    for (int i = 0; i < ListLength(l); i++)
     {
-        ListGet(l1, i, &data);
+        ListGet(l, i, &data);
         printf("%d->", data);
     }
     printf("\n");
-    printf("list 2:");
-    initList(&l2);
-    l2->val = 5;
-    insertList(l2, 0, 6);
-    insertList(l2, 1, 4);
-
-    for (int i = 0; i < ListLength(l2); i++)
-    {
-        ListGet(l2, i, &data);
-        printf("%d->", data);
-    }
-    return 1;
 }
 
 ListNode *addTwoNumbers(ListNode *l1, ListNode *l2)
@@ -54,34 +61,68 @@ ListNode *addTwoNumbers(ListNode *l1, ListNode *l2)
     ListNode *firstLast = l1 + sizeOfFirst;
     ListNode *secondLast = l2 + sizeOfSecond;
     int max = sizeOfFirst > sizeOfSecond ? sizeOfFirst : sizeOfSecond;
-    ListNode **newHead;
-    initList(newHead);
-    bool carry = 0;
+    ListNode *newHead;
+    initList(&newHead);
+    bool carry = 0; // 进位标记，0没有进位
     for (int i = 0; i < max; i++)
     {
-        int val = firstLast->val + secondLast->val;
+        int val = -1;
+        if (firstLast != NULL)
+        {
+            if (val == -1)
+            {
+                val = 0;
+            }
+            val = firstLast->val + val;
+        }
+        if (secondLast != NULL) {
+            if (val == -1)
+            {
+                val = 0;
+            }
+            val = secondLast->val + val;
+        }
         if (carry == 1) // 上一个存在进位
         {
             val = val + 1;
             carry = 0;
         }
 
-        if (val > 10)
+        if (val >= 10)
         {
             carry = 1;
-            insertList(*newHead, i, val - 10);
+            insertList(newHead, i, val - 10);
         }
         else
         {
-            insertList(*newHead, i, val);
+            insertList(newHead, i, val);
+        }
+
+        if (firstLast != l1)
+        {
+            firstLast--;
+        }
+        else 
+        {
+            firstLast = NULL;
+        }
+        if (secondLast != l2)
+        {
+            secondLast--;
+        }
+        else 
+        {
+            secondLast = NULL;
         }
     }
 
-    ListNode **outputHead;
-    reverseList(*newHead, outputHead);
-    return *outputHead;
-}
+    printList(newHead);
 
+    ListNode *outputHead;
+    reverseList(newHead, &outputHead);
+    printList(outputHead);
+    return outputHead;
+}
 
 void reverseList(ListNode *head, ListNode **outputHead)
 {
@@ -96,7 +137,7 @@ void reverseList(ListNode *head, ListNode **outputHead)
     }
 }
 
-// 初始化
+// 初始化，头结点不存储数据
 void initList(ListNode **head)
 {
     *head = (ListNode *)malloc(sizeof(ListNode));
@@ -158,10 +199,10 @@ int ListGet(ListNode *head, int index, int *data)
 {
     ListNode *p;
     int j;
-    p = head;
-    while (p->next != NULL)
+    p = head->next;
+    while (p != NULL)
     {
-        if (p == head + index)
+        if (p == head->next + index)
         {
             *data = p->val;
             return 1;
