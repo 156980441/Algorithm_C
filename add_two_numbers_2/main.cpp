@@ -12,13 +12,38 @@ struct ListNode
 
 int ListLength(ListNode *head);
 void initList(ListNode **head);
-int ListInsert(ListNode *head, int index, int data);
+int insertList(ListNode *head, int index, int data);
 void reverseList(ListNode *head, ListNode **outputHead);
+int ListGet(ListNode *head, int index, int *data);
 
 int main()
 {
-    printf("hello\n");
-    printf("world");
+    ListNode *l1, *l2;
+    int data, size;
+    initList(&l1);
+    l1->val = 7;
+    insertList(l1, 0, 2);
+    insertList(l1, 1, 4);
+    insertList(l1, 2, 3);
+    printf("list 1:");
+    size = ListLength(l1);
+    for (int i = 0; i < size; i++)
+    {
+        ListGet(l1, i, &data);
+        printf("%d->", data);
+    }
+    printf("\n");
+    printf("list 2:");
+    initList(&l2);
+    l2->val = 5;
+    insertList(l2, 0, 6);
+    insertList(l2, 1, 4);
+
+    for (int i = 0; i < ListLength(l2); i++)
+    {
+        ListGet(l2, i, &data);
+        printf("%d->", data);
+    }
     return 1;
 }
 
@@ -44,11 +69,11 @@ ListNode *addTwoNumbers(ListNode *l1, ListNode *l2)
         if (val > 10)
         {
             carry = 1;
-            ListInsert(*newHead, i, val - 10);
+            insertList(*newHead, i, val - 10);
         }
         else
         {
-            ListInsert(*newHead, i, val);
+            insertList(*newHead, i, val);
         }
     }
 
@@ -66,7 +91,7 @@ void reverseList(ListNode *head, ListNode **outputHead)
     int index = 0;
     while (p >= head)
     {
-        ListInsert(*outputHead, 0, p->val);
+        insertList(*outputHead, 0, p->val);
         index++;
     }
 }
@@ -107,11 +132,12 @@ int ListLength(ListNode *head)
 }
 
 // 插入
-int ListInsert(ListNode *head, int index, int data)
+int insertList(ListNode *head, int index, int data)
 {
     ListNode *p, *q;
+    int j;
     p = head;
-    int j = -1;
+    j = -1;
     while (p->next != NULL && j < index - 1)
     {
         p = p->next;
